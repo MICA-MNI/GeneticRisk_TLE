@@ -25,7 +25,7 @@ This repository contains the code to follow the workflow for our imaging-genetic
 │   ├── figure1
 │   ├── figure2
 │   ├── figure3
-│   ├── supplementary2
+│   ├── supplementary1
 │   └── supplementary2
 │
 ├── requirements.txt   
