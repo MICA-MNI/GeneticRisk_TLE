@@ -31,9 +31,9 @@ This repository contains the code to follow the workflow for our imaging-genetic
 ├── requirements.txt   
 │
 └── src                <- Source code
-    ├── dataset.py     <- Code to load data
-    ├── analysis.py    <- Code to run data analysis
-    └── plots.py       <- Code to create visualizations 
+    ├── dataset.py      <- Code to load data
+    ├── analysis.py     <- Code to run data analysis
+    └── plots.py        <- Code to create visualizations 
 ```
 
 --------
