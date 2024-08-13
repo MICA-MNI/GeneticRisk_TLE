@@ -16,7 +16,7 @@ This repository contains the code to follow the workflow for our imaging-genetic
  ```
 ├── README.md
 │ 
-├── data                <- Dataset required for analysis
+├── data                <- Datasets required for analysis
 │   ├── raw
 │   ├── processed
 │   └── results
@@ -31,7 +31,7 @@ This repository contains the code to follow the workflow for our imaging-genetic
 ├── requirements.txt   
 │
 └── src                 <- Source code
-    ├── datasets.py       <- Code to load data
+    ├── datasets.py      <- Code to load data
     ├── analyses         <- Code to run data analysis
     │   ├── 01_geneticCorrelation.py
     │   ├── 02_epicentreMapping.py
