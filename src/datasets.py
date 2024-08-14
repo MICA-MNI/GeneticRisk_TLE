@@ -24,13 +24,16 @@ def main():
     print('--------------------')
     abcd_genetics = pd.read_csv('../data/raw/abcd_genetics.csv', index_col='participant')
     pc10 = abcd_genetics.filter(like="PC")
-    thresh = ['Pt_0.00100005', 'Pt_0.0500001', 'Pt_0.1', 'Pt_0.2', 'Pt_0.3', 'Pt_0.4', 'Pt_0.5']
-    prs = abcd_genetics[thresh]
+    prs_all = abcd_genetics.filter(like="Pt")
 
     print()
     print('Thickness data')
     print('--------------------')
-    abcd_ct = pd.read_csv('../data/raw/abcd_ct.csv', index_col='participant')
+    # Vertex-wise
+    abcd_ct = pd.read_csv('../data/raw/abcd_ct_vertex.csv', index_col='participant')
+
+    # Parcellated
+    abcd_ct = pd.read_csv('../data/raw/abcd_ct_aparc.csv', index_col='participant')
     ct = np.transpose(abcd_ct.to_numpy())
     covars = {'age': age,
               'sex': sex=='M',
@@ -45,7 +48,7 @@ def main():
     print()
     print('Save data')
     print('--------------------')
-    np.savez('../data/processed/abcd_data.npy', age=age, sex=sex, site=site, pc10=pc10, thresh=thresh, prs=prs, ct=ct)
+    np.savez('../data/processed/abcd_data.npy', age=age, sex=sex, site=site, pc10=pc10, thresh=thresh, prs_all=prs_all, ct=ct)
     print()
 
 
