@@ -33,6 +33,7 @@ def casecontrol_difference(data, covar, group, control, patient):
     return slm
 
 
+# Main analysis
 def main():
 
     x = zscore_flip(ct,covar, focus, 'C', 'R')

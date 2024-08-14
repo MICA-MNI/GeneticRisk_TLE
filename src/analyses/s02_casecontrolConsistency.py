@@ -3,6 +3,8 @@ import pandas as pd
 from 02_epicentreMapping import spatial_correlation
 from 03_casecontrolAssociation import casecontrol_difference, zscore_flip
 
+
+# Main analysis
 def main()
 
     x = zscore_flip(ct, covar, focus, 'C', 'R')
@@ -24,6 +26,7 @@ def main()
         r, p, null = spatial_correlation(slm.t, imaging_genetics.t)
 
         association[f'{hemi.lower()}tle'] = {'r':r, 'p':p, 'null':null}
+
 
     x = zscore_flip(ct, covar, focus, 'C', 'X')
     covar = pd.concat([age, sex])

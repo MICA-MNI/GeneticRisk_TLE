@@ -6,7 +6,7 @@ from brainstat.stats.SLM import SLM
 from enigmatoolbox.utils import parcel_to_surface
 
 
-
+# Main analysis
 def main():
 
     thresholds = ['Pt_0.00100005', 'Pt_0.0500001', 'Pt_0.1', 'Pt_0.2', 'Pt_0.3', 'Pt_0.4', 'Pt_0.5']
