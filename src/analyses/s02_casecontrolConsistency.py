@@ -14,13 +14,14 @@ def main()
         print('Derive atrophy map')
         print('------------------------')
         slm = casecontrol_difference(x, covar, focus, 'C', hemi)
+        atrophy[f'{hemi.lower()}tle'] = slm
 
         print()
         print('Correlate with PRS map')
         print('------------------------')
         r, p, null = spatial_correlation(slm.t, imaging_genetics.t)
 
-        epilepsy_atrophy[f'{hemi.lower()}tle'] = {'slm':slm, 'r':r, 'p':p, 'null':null}
+        association[f'{hemi.lower()}tle'] = {'r':r, 'p':p, 'null':null}
 
     x = zscore_flip(ct, covar, focus, 'C', 'X')
     covar = pd.concat([age, sex])
@@ -32,17 +33,20 @@ def main()
     print('Derive atrophy map')
     print('-------------------------------')
     slm = casecontrol_difference(x, covar, group, 'HC', 'IGE')
+    atrophy['ige'] = slm
 
     print()
     print('Correlate with PRS map')
     print('-------------------------------')
     r, p, null = spatial_correlation(slm.t, imaging_genetics.t)
+    association['ige'] = {'r':r, 'p':p, 'null':null}
 
-    epilepsy_atrophy['ige'] = {'slm':slm, 'r':r, 'p':p, 'null'null}
-
+    print()
     print('-----------')
     print('Save resuts')
     print('-----------')
+    np.savez('../../data/results/s02_casecontrolConsistency/atrophy_association.npz',
+            atrophy=atrophy, association=association)
 
 
 if __name__ == "__main__":

@@ -37,7 +37,7 @@ def main():
     # Correlate with PRS-TLE
     for i, lobe in enumerate(lobe_names):
         if 'whole' in lobe:
-            idx = np.array([True]*int(len(lobes)/2) + [False]*int(len(lobes)/2)) if 'lh' in lobe else np.array([False]*int(len(lobes)/2) + [True]*int(len(lobes)/2))
+            idx = np.array([True]*len(lobes))
         else:
             idx = lobes == i if 'lh' in lobe else lobes == i+6
 
@@ -70,6 +70,11 @@ def main():
     print()
     print('Save results')
     print('------------------------------------------')
+    np.savez('../../data/resuts/s01_thresholdConsistency/threshold_global_association.npz',
+             global_association=global_association)
+    np.savez('../../data/resuts/s01_thresholdConsistency/threshold_regional_association.npz',
+             regional_association=regional_association)
+
 
     print()
     print('----------------------------------')
@@ -115,19 +120,22 @@ def main():
 
     site_labels = ['lh_all', 'lh_epic', 'lh_mics', 'lh_nkg',
                    'rh_all', 'rh_epic', 'rh_mics', 'rh_nkg']
-    tle_similarity_r = np.zeros((len(thresholds),len(site_labels)))
-    tle_similarity_p = np.zeros((len(thresholds),len(site_labels)))
+    atrophy_similarity_r = np.zeros((len(thresholds),len(site_labels)))
+    atrophy_similarity_p = np.zeros((len(thresholds),len(site_labels)))
     for i in range(len(thresholds)):
         map1 = regional_association[thresholds[i]]
         for site in site_labels:
             map2 = tle_atrophy[site]
-            tle_similarity_r[i,j], thr_similarity_p[i,j], _ = spatial_correlation(map1.t, map2.t, n_rot=5000)
+            atrophy_similarity_r[i,j], atrophy_similarity_p[i,j], _ = spatial_correlation(map1.t, map2.t, n_rot=5000)
 
     print()
     print('Save results')
     print('----------------------------------')
-    np.savez('../../data/results')
+    np.savez('../../data/resuts/s01_thresholdConsistency/threshold_similarity.npz',
+             thr_similarity_r=thr_similarity_r, thr_similarity_p=thr_similarity_p)
+    np.savez('../../data/resuts/s01_thresholdConsistency/atrophy_similarity.npz',
+             atrophy_similarity_r=atrophy_similarity_r, atrophy_similarity_p=atrophy_similarity_p)
 
-    
+
 if __name__ == "__main__":
     main()

@@ -1,5 +1,10 @@
 import numpy as np
+import pandas as pd
+import pickle
+from brainstat.stats.terms import FixedEffect
+from brainstat.stats.SLM import SLM
 from enigmatoolbox.permutation_testing import spin_test
+
 
 # Helper functions
 def zscore_flip(data, group, control, flip):
@@ -47,19 +52,21 @@ def main():
         print('Derive atrophy map')
         print('------------------------')
         slm = casecontrol_difference(x, covar, focus, 'C', hemi)
+        atrophy[f'{hemi.lower()}tle'] = slm
 
         print()
         print('Correlate with PRS map')
         print('------------------------')
         r, p, null = spatial_correlation(slm.t, imaging_genetics.t)
 
-        tle_atrophy[f'{hemi.lower()}tle'] = {'slm':slm, 'r':r, 'p':p, 'null'null}
+        association[f'{hemi.lower()}tle'] = {'r':r, 'p':p, 'null'null}
 
 
     print()
     print('Save results')
     print('------------------------')
-
+    np.savez('../../data/results/03_casecontrolAssociation/atrophy_association.npz',
+            atrophy=atrophy, association=association)
 
 
 if __name__ == "__main__":

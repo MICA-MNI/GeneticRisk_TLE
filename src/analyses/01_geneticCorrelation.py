@@ -1,7 +1,9 @@
 import numpy as np
-from scipy.stats.stats import pearsonr
+import pandas as pd
+import pickle
 from brainstat.stats.terms import FixedEffect
 from brainstat.stats.SLM import SLM
+from scipy.stats.stats import pearsonr
 
 def correlate_lobes(lobes, hemisphere_lobes, ct_vertex, prs, hemisphere):
     mean_ct = np.zeros(len(hemisphere_lobes))
@@ -13,7 +15,7 @@ def correlate_lobes(lobes, hemisphere_lobes, ct_vertex, prs, hemisphere):
 def main():
 
     # Load data
-    abcd_data = np.load('../data/processed/abcd_data.npz')
+    data = np.load('../data/processed/abcd_data.npz')
     thr = 'Pt_0.1'; prs = prs_all[thr]
 
     print('-----------------------------')
@@ -57,7 +59,7 @@ def main():
 
     for i, lobe in enumerate(lobe_names):
         if 'whole' in lobe:
-            idx = np.array([True]*int(len(lobes)/2) + [False]*int(len(lobes)/2)) if 'lh' in lobe else np.array([False]*int(len(lobes)/2) + [True]*int(len(lobes)/2))
+            idx = np.array([True]*(len(lobes)/2) + [False]*(len(lobes)/2)) if 'lh' in lobe else np.array([False]*(len(lobes)/2) + [True]*(len(lobes)/2))
         else:
             idx = lobes == i if 'lh' in lobe else lobes == i+6
 
@@ -71,7 +73,7 @@ def main():
     print()
     print('Save results')
     print('-----------------------------')
-
+    global_association.to_pickle('../../data/results/01_geneticCorrelation/global_association.pkl')
 
     print()
     print('-------------------------')
@@ -90,6 +92,8 @@ def main():
     print()
     print('Save results')
     print('-----------------------------')
+    pickle.dump(slm, '../../data/resuts/01_geneticCorrelation/regional_association.pkl')
+
 
 if __name__ == "__main__":
     main()
