@@ -3,15 +3,11 @@ import pandas as pd
 import pickle
 from brainstat.stats.terms import FixedEffect
 from brainstat.stats.SLM import SLM
+from enigmatoolbox.utils import parcel_to_surface
 from scipy.stats.stats import pearsonr
 
-def correlate_lobes(lobes, hemisphere_lobes, ct_vertex, prs, hemisphere):
-    mean_ct = np.zeros(len(hemisphere_lobes))
-    r = np.zeros(len(hemisphere_lobes))
-    r2 = np.zeros(len(hemisphere_lobes))
-    p = np.zeros(len(hemisphere_lobes))
 
-
+# Main analysis
 def main():
 
     # Load data

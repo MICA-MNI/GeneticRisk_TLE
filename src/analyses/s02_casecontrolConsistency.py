@@ -1,5 +1,7 @@
 import numpy as np
-from 03_casecontrolAssociation import casecontrol_difference, spatial_correlation
+import pandas as pd
+from 02_epicentreMapping import spatial_correlation
+from 03_casecontrolAssociation import casecontrol_difference, zscore_flip
 
 def main()
 

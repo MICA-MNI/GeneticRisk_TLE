@@ -1,6 +1,11 @@
 import numpy as np
-from 03_casecontrolAssociation import casecontrol_difference, spatial_correlation
-from 01_geneticCorrelation import zscore_flip, imaging_genetic_association
+from 02_epicentreMapping import spatial_correlation
+from 03_casecontrolAssociation import casecontrol_difference, zscore_flip
+from brainstat.stats.terms import FixedEffect
+from brainstat.stats.SLM import SLM
+from enigmatoolbox.utils import parcel_to_surface
+
+
 
 def main():
 

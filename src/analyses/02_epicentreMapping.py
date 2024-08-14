@@ -3,18 +3,26 @@ from enigmatoolbox.datasets import load_sc, load_fc
 from enigmatoolbox.permutation_testing import spin_test
 
 
-# Helper function
+# Helper functions
+def spatial_correlation(map1, map2, n_rot=5000):
+    r = np.corrcoef(map1,map2)[0,1]
+    p, null = spin_test(map1, map2, surface_name='fsa5', parcellation_name='aparc', n_rot=n_rot, null_distr=True)
+
+    return r, p, null
+
 def epicenter_mapping(map, connectome):
     epi_r = []
     epi_p = []
     for seed in range(connectome.shape[0]):
         seed_con = connectome[:, seed]
-        epi_r = np.append(epi_r, np.corrcoef(seed_con, map)[0, 1])
-        epi_p = np.append(epi_p, spin_test(seed_con, map, surface_name='fsa5', parcellation_name='aparc', type='pearson', n_rot=5000, null_dist=False))
+        r, p, _ = spatial_correlation(seed_con, map)
+        epi_r = np.append(epi_r, r)
+        epi_p = np.append(epi_p, p)
 
     return epi_r, epi_p
 
 
+# Main analysis
 def main():
 
     print('---------------------------')

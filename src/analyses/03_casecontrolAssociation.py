@@ -1,9 +1,9 @@
 import numpy as np
 import pandas as pd
 import pickle
+from 02_epicentreMapping import spatial_correlation
 from brainstat.stats.terms import FixedEffect
 from brainstat.stats.SLM import SLM
-from enigmatoolbox.permutation_testing import spin_test
 
 
 # Helper functions
@@ -31,12 +31,6 @@ def casecontrol_difference(data, covar, group, control, patient):
     slm = SLM(model, contrast, correction='fdr', two_tailed=True)
     slm.fit(data)
     return slm
-
-def spatial_correlation(map1, map2, n_rot):
-    r = np.corrcoef(map1,map2)[0,1]
-    p, null = spin_test(map1, map2, n_rot=n_rot, null_distr=True)
-
-    return r, p, null
 
 
 def main():
