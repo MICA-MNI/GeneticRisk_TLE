@@ -16,12 +16,17 @@ This repository contains the code to follow the workflow for our imaging-genetic
  ```
 ├── README.md
 │ 
-├── data                <- Datasets required for analysis
+├── datais
 │   ├── raw
 │   ├── processed
 │   └── results
+│       ├── 01_geneticCorrelation
+│       ├── 02_epicentreMapping
+│       ├── 03_casecontrolAssociation
+│       ├── s01_thresholdConsistency
+│       └── s02_casecontrolConsistency
 │
-├── figures             <- Generated necessary plots and graphics for each figure
+├── figures
 │   ├── figure1
 │   ├── figure2
 │   ├── figure3
@@ -30,15 +35,15 @@ This repository contains the code to follow the workflow for our imaging-genetic
 │
 ├── requirements.txt   
 │
-└── src                 <- Source code
-    ├── datasets.py      <- Code to load data
-    ├── analyses         <- Code to run data analysis
+└── src
+    ├── datasets.py
+    ├── analyses
     │   ├── 01_geneticCorrelation.py
     │   ├── 02_epicentreMapping.py
     │   ├── 03_casecontrolAssociation.py
     │   ├── s01_thresholdConsistency.py
     │   └── s02_casecontrolConsistency.py
-    └── plots            <- Code to create visualizations
+    └── plots
         ├── f01_geneticCorrelation.py
         ├── f02_epicentreMapping.py
         ├── f03_casecontrolAssociation.py
