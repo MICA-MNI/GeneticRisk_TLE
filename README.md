@@ -12,11 +12,11 @@ Boris C. Bernhardt: boris.bernhardt@mcgill.ca (corresponding author)
 This repository contains the code to follow the workflow for our imaging-genetic analysis
 
 ## Repository content
- 
+
  ```
 ├── README.md
-│ 
-├── datais
+│
+├── data
 │   ├── raw
 │   ├── processed
 │   └── results
