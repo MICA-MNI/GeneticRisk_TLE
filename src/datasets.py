@@ -42,7 +42,7 @@ def main():
     covars = pd.DataFrame({"age": age, "sex": sex == "M", "site": site})
     categorical_cols = ["sex"]
     batch_col = "site"
-    ct_aparc = np.transpose(
+    ct_vertex = np.transpose(
         neuroCombat(
             dat=ct_vertex,
             covars=covars,
