@@ -4,13 +4,39 @@ from enigmatoolbox.permutation_testing import spin_test
 
 
 # Helper functions
-def spatial_correlation(map1, map2, n_rot=5000):
+def spatial_correlation(map1, map2, n_rot=5000, surface_name='fsa5', parcellation_name='aparc'):
+    """
+    Calculate the spatial correlation between two maps and perform a spin permuation spin_test
+
+    Parameters:
+    map1 (array-like): First spatial map
+    map2 (array-like): Second spatial map
+    n_rot (int, optional): Number of rotations. Default is 5000
+    surface_name (str, optional): Name of surface. Default is 'fsa5'
+    parcellation_name (str, optional): Name of parcellation. Default is 'aparc'
+
+    Returns:
+    r (float): Pearson's correlation coefficient between map1 and map2
+    p (float): Permutation-based p-pvalue
+    null (array-like): Null distribution from the permuation spin_test
+    """
     r = np.corrcoef(map1,map2)[0,1]
-    p, null = spin_test(map1, map2, surface_name='fsa5', parcellation_name='aparc', n_rot=n_rot, null_distr=True)
+    p, null = spin_test(map1, map2, surface_name=surface_name, parcellation_name=parcellation_name, n_rot=n_rot, null_distr=True)
 
     return r, p, null
 
 def epicenter_mapping(map, connectome):
+    """
+    Map epicentres of a given map to a connectome
+
+    Parameters:
+    map (array-like): Spatial map
+    connectome (array-like): Connectome matrix
+
+    Returns:
+    epi_r: Correlation coefficients of each seed regions
+    epi_p: Permuation-based p-values of each seed regions
+    """
     epi_r = []
     epi_p = []
     for seed in range(connectome.shape[0]):

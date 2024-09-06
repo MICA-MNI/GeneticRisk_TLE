@@ -5,7 +5,7 @@ from 03_casecontrolAssociation import casecontrol_difference, zscore_flip
 
 
 # Main analysis
-def main()
+def main():
 
     x = zscore_flip(ct, covar, focus, 'C', 'R')
     covar = pd.concat([age, sex])
@@ -50,7 +50,7 @@ def main()
     print('-----------')
     print('Save resuts')
     print('-----------')
-    np.savez('../../data/results/s02_casecontrolConsistency/atrophy_association.npz',
+    np.savez('../../data/results/s02_atrophyConsistency/atrophy_association.npz',
             atrophy=atrophy, association=association)
 
 
