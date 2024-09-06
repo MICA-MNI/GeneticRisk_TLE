@@ -1,5 +1,5 @@
 import numpy as np
-from 02_epicentreMapping import spatial_correlation
+from 02_epicentreMapping import spatial_correlation, epicenter_mapping
 from 03_casecontrolAssociation import casecontrol_difference, zscore_flip
 from brainstat.stats.terms import FixedEffect
 from brainstat.stats.SLM import SLM
@@ -132,6 +132,41 @@ def main():
         for site in site_labels:
             map2 = tle_atrophy[site]
             atrophy_similarity_r[i,j], atrophy_similarity_p[i,j], _ = spatial_correlation(map1.t, map2.t, n_rot=5000)
+
+    print()
+    print('Psnp thresholds')
+    print('----------------------------------')
+    fc_ctx, _, fc_sctx, _ = load_fc()
+    sc_ctx, _, sc_sctx, _ = load_sc()
+
+    thr_fc_epicentre = np.zeros((len(thresholds), 82))
+    thr_sc_epicentre = np.zeros((len(thresholds), 82))
+    fc_epicentre_similarity_r = np.zeros((len(thresholds),len(thresholds)))
+    fc_epicentre_similarity_p = np.zeros((len(thresholds),len(thresholds)))
+    sc_epicentre_similarity_r = np.zeros((len(thresholds),len(thresholds)))
+    sc_epicentre_similarity_p = np.zeros((len(thresholds),len(thresholds)))
+    for i in range(len(thresholds)):
+        thr1 = regional_association[thresholds[i]]
+
+        fc_ctx_r1, fc_ctx_p1 = epicenter_mapping(thr1, fc_ctx)
+        fc_sctx_r1, fc_sctx_p1 = epicenter_mapping(thr1, fc_sctx)
+        sc_ctx_r1, sc_ctx_p1 = epicenter_mapping(thr1, sc_ctx)
+        sc_sctx_r1, sc_sctx_p1 = epicenter_mapping(thr1, sc_sctx)
+
+        thr_fc_epicentre[i,:] = np.concatenate((fc_ctx_r1, fc_sctx_r1))
+        thr_sc_epicentre[i,:] = np.concatenate((sc_ctx_r1, sc_sctx_r1))
+
+        for j in range(i, len(thresholds)):
+            thr2 = regional_association[threhsolds[j]]
+
+            fc_ctx_r2, fc_ctx_p2 = epicenter_mapping(thr2, fc_ctx)
+            fc_sctx_r2, fc_sctx_p2 = epicenter_mapping(thr2, fc_sctx)
+            sc_ctx_r2, sc_ctx_p2 = epicenter_mapping(thr2, sc_ctx)
+            sc_sctx_r2, sc_sctx_p2 = epicenter_mapping(thr2, sc_sctx)
+
+            fc_epicentre_similarity_r[i,j], epicentre_similarity_p[i,j], _ = spatial_correlation(np.concatenate((fc_ctx_r1, fc_sctx_r1)), np.concatenate((fc_ctx_r2, fc_sctx_r2)), surface_name='fsa5_with_sctx', parcellation_name='aparc_aseg', n_rot=5000)
+            print(f'{thresholds[i]} x {thresholds[j]} done')
+
 
     print()
     print('Save results')
