@@ -1,93 +1,62 @@
 import numpy as np
 import pandas as pd
 import pickle
-from 02_epicentreMapping import spatial_correlation
+import utilities as util
 from brainstat.stats.terms import FixedEffect
 from brainstat.stats.SLM import SLM
 
 
 # Helper functions
-def zscore_flip(data, group, control, flip):
+def load_local_tle():
     """
-    Perform z-score normalization (relative to healthy controls) and sort patients based on ipsilateral/contralateral
-
-    Parameters:
-    data (array-like): Case-control data
-    group (array-like): Group labels
-    control (str): Control-identifying label
-    flip (str): Right-identifying label
+    Load local TLE (EpiC x MICs x NKG) data
 
     Returns:
-    f (array-like): z-score normalized and sorted (ipsi/contra) data
+    numpy.ndarray: The loaded data containing age, sex, dataset, focus, and ct information.
     """
-    # z-score normalization
-    hc = group==control
-    hc_mean = np.mean(data[hc,:], axis=0)
-    hc_std = np.mean(data[hc,:], axis=0)
-    z = (data - hc_mean) / hc_std
-
-    # Sort based on ipsilateral/contralateral
-    rtle = group==flip
-    n_region = data.shape[1]/2
-    f = z.copy()
-    f[rtle, :n_region] = z[rtle, n_region:]
-    f[rtle, n_region:] = z[rtle, :n_region]
-
-    return f
-
-def casecontrol_difference(data, covar, group, control, patient):
-    """
-    Compute between-group differents using a fixed effect model
-
-    Parameters:
-    data (array-like): DataFram
-    covar (dict): Covariates in the model
-    group: Group labels
-    control: Control-identifying label
-    patient: Patient-identifying labels
-
-    Returns:
-    slm (SLM): Statistical linear model
-    """
-    model = FixedEffect(group)
-    for c in covar.keys():
-        model += FixedEffect(covar[c])
-    contrast = (group==patient).astype(int) - (group==control).astype(int)
-    slm = SLM(model, contrast, correction='fdr', two_tailed=True)
-    slm.fit(data)
-    return slm
+    return util.load_data(
+        "../../data/processed/local_tle_data.npz",
+        ["age", "sex", "dataset", "focus", "ct"],
+    )
 
 
 # Main analysis
 def main():
+    # Load LTE data
+    age, sex, dataset, focus, ct = load_local_tle()
 
-    x = zscore_flip(ct,covar, focus, 'C', 'R')
+    # Load imaging genetic result
+    imaging_genetics = util.load_imaging_genetic()
+    x = zscore_flip(ct, focus, "C", "R")
     covar = pd.concat([age, sex])
-    for hemi in ['L', 'R']:
-        print('------------------------')
-        print(f'{hemi} temporal lobe epilepsy')
-        print('------------------------')
+    atrophy, atrophy_association = {}, {}
+    for hemi in ["L", "R"]:
+        print("------------------------")
+        print(f"{hemi} temporal lobe epilepsy")
+        print("------------------------")
 
         print()
-        print('Derive atrophy map')
-        print('------------------------')
-        slm = casecontrol_difference(x, covar, focus, 'C', hemi)
-        atrophy[f'{hemi.lower()}tle'] = slm
+        print("Derive atrophy map")
+        print("------------------------")
+        slm = util.casecontrol_difference(x, covar, focus, "C", hemi)
+        atrophy[f"{hemi.lower()}tle"] = slm
 
         print()
-        print('Correlate with PRS map')
-        print('------------------------')
-        r, p, null = spatial_correlation(slm.t, imaging_genetics.t)
+        print("Correlate with PRS map")
+        print("------------------------")
+        r, p, null = util.spatial_correlation(slm.t, imaging_genetics.t)
 
-        atrophy_association[f'{hemi.lower()}tle'] = {'r':r, 'p':p, 'null':null}
-
+        atrophy_association[f"{hemi.lower()}tle"] = {"r": r, "p": p, "null": null}
 
     print()
-    print('------------')
-    print('Save results')
-    print('------------')
-    np.savez('../../data/results/03_atrophyAssociation/atrophy_association.npz',
-            atrophy=atrophy, atrophy_association=atrophy_association)
+    print("------------")
+    print("Save results")
+    print("------------")
+    np.savez(
+        "../../data/results/03_atrophyAssociation/atrophy_association.npz",
+        atrophy=atrophy,
+        atrophy_association=atrophy_association,
+    )
 
 
 if __name__ == "__main__":

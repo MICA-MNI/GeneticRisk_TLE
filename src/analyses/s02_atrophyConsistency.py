@@ -4,6 +4,31 @@ from 02_epicentreMapping import spatial_correlation
 from 03_casecontrolAssociation import casecontrol_difference, zscore_flip
 
 
+# Helper functions
+def load_multi_tle():
+    """
+    Load multisite TLE (ENIGMA) data
+
+    Returns:
+    numpy.ndarray: The loaded data containing age, sex, dataset, group, focus, and ct information.
+    """
+    return load_data(
+        "../../data/processed/multi_tle_data.npz",
+        ["age", "sex", "dataset", "group", "focus", "ct"],
+    )
+
+
+def load_multi_ige():
+    """
+    Load multisite IGE (ENIGMA) data
+
+    Returns:
+    numpy.ndarray: The loaded data containing age, sex, dataset, group, focus, and ct information.
+    """
+    return load_data(
+        "../../data/processed/multi_tle_data.npz",
+        ["age", "sex", "dataset", "group", "ct"],
+    )
 # Main analysis
 def main():
 
