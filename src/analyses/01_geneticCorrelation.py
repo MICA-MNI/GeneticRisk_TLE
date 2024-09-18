@@ -2,6 +2,7 @@ import pickle
 import os
 import numpy as np
 import pandas as pd
+import utilities as util
 from brainstat.stats.terms import FixedEffect
 from brainstat.stats.SLM import SLM
 from enigmatoolbox.utils import parcel_to_surface
@@ -9,24 +10,23 @@ from scipy.stats import pearsonr
 
 
 # Helper functions
-def load_data():
-    data = np.load("../../data/processed/abcd_data.npz", allow_pickle=True)
-    age = data["age"]
-    sex = data["sex"]
-    site = data["site"]
-    pc10 = data["pc10"]
-    thresh = data["thresh"]
-    prs_all = data["prs_all"]
-    ct_vertex = data["ct_vertex"]
-    ct_aparc = data["ct_aparc"]
+def load_abcd():
+    """
+    Load local TLE (EpiC x MICs x NKG) data
 
-    return age, sex, site, pc10, thresh, prs_all, ct_vertex, ct_aparc
+    Returns:
+    numpy.ndarray: The loaded data containing age, sex, dataset, focus, and ct information.
+    """
+    return util.load_data(
+        "../../data/processed/local_tle_data.npz",
+        ["age", "sex", "site", "pc10", "thresh", "prs_all", "ct_vertex", "ct_aparc"],
+    )
 
 
 # Main analysis
 def main():
     # Load data
-    age, sex, site, pc10, thresh, prs_all, ct_vertex, ct_aparc = load_data()
+    age, sex, site, pc10, thresh, prs_all, ct_vertex, ct_aparc = load_abcd()
 
     thr = "Pt_0.1"
     prs = prs_all[:, thresh == thr].flatten()
@@ -135,11 +135,10 @@ def main():
     print()
     print("Save results")
     print("-----------------------------")
-    with open(
-        f"{os.path.dirname(os.path.abspath(__file__))}/../../data/results/01_geneticCorrelation/regional_association.pkl",
-        "wb",
-    ) as f:
-        pickle.dump({"slm": slm}, f)
+    util.save_to_pickle(
+        "../../data/results/01_geneticCorrelation/regional_association.pkl",
+        {"slm": slm},
+    )
 
 
 if __name__ == "__main__":

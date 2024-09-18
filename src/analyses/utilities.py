@@ -1,20 +1,12 @@
 import numpy as np
+import os
+import pickle
 from enigmatoolbox.permutation_testing import spin_test
+from brainstat.stats.terms import FixedEffect
+from brainstat.stats.SLM import SLM
 
 
-def load_imaging_genetic():
-    """
-    Load imaging genetic results from 01_geneticCorrelation.
-
-    Returns:
-    slm: Statistical linear model object
-    """
-    file_path = f"{os.path.dirname(os.path.abspath(__file__))}/../../data/results/01_geneticCorrelation/regional_association.pkl"
-    with open(file_path, "rb") as f:
-        data = pickle.load(f)
-    return data["slm"]
-
-
+# Data loaders
 def load_data(file_path, variables):
     """
     Load specified variables from a .npz file.
@@ -30,6 +22,61 @@ def load_data(file_path, variables):
     return tuple(data[var] for var in variables)
 
 
+def load_connectomes():
+    """
+    Load functional and structural connectome data.
+
+    Returns:
+    fc_ctx (array-like): Cortico-cortical functional connectivity
+    fc_sctx (array-like): Cortico-subcortical functional connectivity
+    sc_ctx (array-like): Cortico-cortical structural connectivity
+    sc_sctx (array-like): Cortico-subcortical structural connectivity
+    """
+    return load_data(
+        f"{os.path.dirname(os.path.abspath(__file__))}/../../data/processed/hcp_data.npz",
+        ["fc_ctx", "fc_sctx", "sc_ctx", "sc_sctx"],
+    )
+
+
+def load_result(file_path, variables):
+    """
+    Load specified variables from a pickle file.
+
+    Parameters:
+    file_path (str): The path to the pickle file.
+    variables (list of str): A list of variable names to extract from the pickle file.
+
+    Returns:
+    tuple: A tuple containing the data for each specified variable in the order they are listed in the variables parameter.
+    """
+    with open(file_path, "rb") as f:
+        data = pickle.load(f)
+    return tuple(data[var] for var in variables)
+
+
+def load_imaging_genetic(result):
+    """
+    Load regional or network prs results from a pickle file.
+
+    Parameters:
+    result (str): either 'regional' or 'network'
+
+    Returns:
+    tuple: A tuple containing the data of specified result.
+    """
+    if result == "regional":
+        return load_result(
+            f"{os.path.dirname(os.path.abspath(__file__))}/../../data/results/01_geneticCorrelation/regional_association.pkl",
+            ["slm"],
+        )[0].t
+    elif result == "network":
+        return load_result(
+            f"{os.path.dirname(os.path.abspath(__file__))}/../../data/results/02_geneticCorrelation/epicentre.pkl",
+            ["fc_ctx_r", "fc_sctx_r", "sc_ctx_r", "sc_sctx_r"],
+        )
+
+
+# Analysis functions
 def spatial_correlation(
     map1, map2, n_rot=5000, surface_name="fsa5", parcellation_name="aparc"
 ):
@@ -50,12 +97,12 @@ def spatial_correlation(
     """
     r = np.corrcoef(map1, map2)[0, 1]
     p, null = spin_test(
-        map1,
-        map2,
+        map1.flatten(),
+        map2.flatten(),
         surface_name=surface_name,
         parcellation_name=parcellation_name,
         n_rot=n_rot,
-        null_distr=True,
+        null_dist=True,
     )
 
     return r, p, null
@@ -70,13 +117,13 @@ def epicenter_mapping(map, connectome):
     connectome (array-like): Connectome matrix
 
     Returns:
-    epi_r: Correlation coefficients of each seed regions
-    epi_p: Permuation-based p-values of each seed regions
+    epi_r (array-like): Correlation coefficients of each seed regions
+    epi_p (array-like): Permuation-based p-values of each seed regions
     """
     epi_r = []
     epi_p = []
     for seed in range(connectome.shape[0]):
-        seed_con = connectome[:, seed]
+        seed_con = connectome[seed, :]
         r, p, _ = spatial_correlation(seed_con, map)
         epi_r = np.append(epi_r, r)
         epi_p = np.append(epi_p, p)
@@ -100,12 +147,12 @@ def zscore_flip(data, group, control, flip):
     # z-score normalization
     hc = group == control
     hc_mean = np.mean(data[hc, :], axis=0)
-    hc_std = np.mean(data[hc, :], axis=0)
+    hc_std = np.std(data[hc, :], axis=0)
     z = (data - hc_mean) / hc_std
 
     # Sort based on ipsilateral/contralateral
     rtle = group == flip
-    n_region = data.shape[1] / 2
+    n_region = int(data.shape[1] / 2)
     f = z.copy()
     f[rtle, :n_region] = z[rtle, n_region:]
     f[rtle, n_region:] = z[rtle, :n_region]
@@ -120,9 +167,9 @@ def casecontrol_difference(data, covar, group, control, patient):
     Parameters:
     data (array-like): DataFram
     covar (dict): Covariates in the model
-    group: Group labels
-    control: Control-identifying label
-    patient: Patient-identifying labels
+    group (array-like): Group labels
+    control (str): Control-identifying label
+    patient (str): Patient-identifying labels
 
     Returns:
     slm (SLM): Statistical linear model
@@ -134,3 +181,16 @@ def casecontrol_difference(data, covar, group, control, patient):
     slm = SLM(model, contrast, correction="fdr", two_tailed=True)
     slm.fit(data)
     return slm
+
+
+# Result savers
+def save_to_pickle(file_path, data):
+    """
+    Save the given data to a pickle file.
+
+    Parameters:
+    file_path (str): The path to the pickle file where the data will be saved.
+    data (dict): The data to be saved in the pickle file.
+    """
+    with open(file_path, "wb") as f:
+        pickle.dump(data, f)
