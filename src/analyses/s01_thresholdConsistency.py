@@ -185,14 +185,14 @@ def main():
     age, sex, dataset, focus, ct = load_local_tle()
     local_tle_atrophy = util.load_data(
         "../../data/results/03_atrophyAssociation/local_atrophy.pkl", ["atrophy"]
-    )
+    )[0]
     # Combined
     tle_atrophy = {}
-    tle_atrophy["lh_all"] = local_tle_atrophy["ltle"]["slm"].t
-    tle_atrophy["rh_all"] = local_tle_atrophy["rtle"]["slm"].t
+    tle_atrophy["lh_all"] = local_tle_atrophy["ltle"]
+    tle_atrophy["rh_all"] = local_tle_atrophy["rtle"]
 
     # Across different datasets
-    for d in ["EpiC", "MICs", "NKG"]:
+    for d in ["EpiC", "MICs", "NKG1"]:
         dataset_idx = dataset == d
         dataset_ct = ct[dataset_idx, :]
         dataset_age = age[dataset_idx]
@@ -204,7 +204,7 @@ def main():
             covar = pd.DataFrame({"age": dataset_age, "sex": dataset_sex})
             tle_atrophy[f"{hemi.lower()}h_{d.lower()}"] = util.casecontrol_difference(
                 x, covar, dataset_focus, "C", hemi
-            ).t
+            )
 
         print(f"{d} atrophy done")
 
@@ -212,11 +212,11 @@ def main():
         "lh_all",
         "lh_epic",
         "lh_mics",
-        "lh_nkg",
+        "lh_nkg1",
         "rh_all",
         "rh_epic",
         "rh_mics",
-        "rh_nkg",
+        "rh_nkg1",
     ]
     atrophy_similarity_r = np.zeros((len(thresholds), len(site_labels)))
     atrophy_similarity_p = np.zeros((len(thresholds), len(site_labels)))
@@ -237,12 +237,10 @@ def main():
     )
 
     util.save_to_pickle(
-        "../../data/results/s01_thresholdConsistency/epicentre_similarity.pkl",
+        "../../data/results/s01_thresholdConsistency/threshold_atrophy_association.pkl",
         {
-            "fc_epicentre_similarity_r": fc_epicentre_similarity_r,
-            "fc_epicentre_similarity_p": fc_epicentre_similarity_p,
-            "sc_epicentre_similarity_r": sc_epicentre_similarity_r,
-            "sc_epicentre_similarity_p": sc_epicentre_similarity_p,
+            "atrophy_similarity_r": atrophy_similarity_r,
+            "atrophy_similarity_p": atrophy_similarity_p,
         },
     )
 
