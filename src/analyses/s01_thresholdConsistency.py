@@ -1,5 +1,3 @@
-import pickle
-import os
 import numpy as np
 import pandas as pd
 import utilities as util
@@ -121,7 +119,7 @@ def main():
         r = np.zeros(len(thresholds))
         r2 = np.zeros(len(thresholds))
         p = np.zeros(len(thresholds))
-        mean_ct = np.mean(ct_vertex[:, idx], axis=1)
+        mean_ct = np.mean(residual[:, idx], axis=1)
         for thr in thresholds:
             prs = prs_all[:, thresh == thr].flatten()
             corr = pearsonr(prs, mean_ct)
@@ -134,7 +132,7 @@ def main():
         print(f"{lobe} lobe done")
 
     print()
-    print("Regional effects across d")
+    print("Regional effects across thresholds")
     print("------------------------------------------")
     regional_association = {}
     for thr in thresholds:
@@ -151,12 +149,12 @@ def main():
     print()
     print("Save results")
     print("------------------------------------------")
-    util.to_pickle(
+    util.save_to_pickle(
         "../../data/results/s01_thresholdConsistency/threshold_global_association.pkl",
         {"global_association": global_association},
     )
 
-    util.to_pickle(
+    util.save_to_pickle(
         "../../data/results/s01_thresholdConsistency/threshold_regional_association.pkl",
         {"regional_association": regional_association},
     )
@@ -183,8 +181,7 @@ def main():
     print()
     print("Psnp thresholds - epicentres")
     print("----------------------------------")
-    fc_ctx, _, fc_sctx, _ = load_fc()
-    sc_ctx, _, sc_sctx, _ = load_sc()
+    fc_ctx, fc_sctx, sc_ctx, sc_sctx = util.load_connectomes()
 
     thr_fc_epicentre = np.zeros((len(thresholds), 82))
     thr_sc_epicentre = np.zeros((len(thresholds), 82))
@@ -193,26 +190,26 @@ def main():
     sc_epicentre_similarity_r = np.zeros((len(thresholds), len(thresholds)))
     sc_epicentre_similarity_p = np.zeros((len(thresholds), len(thresholds)))
     for i in range(len(thresholds)):
-        thr1 = regional_association[thresholds[i]]
+        thr1 = regional_association[thresholds[i]].t
 
-        fc_ctx_r1, fc_ctx_p1 = epicenter_mapping(thr1, fc_ctx)
-        fc_sctx_r1, fc_sctx_p1 = epicenter_mapping(thr1, fc_sctx)
-        sc_ctx_r1, sc_ctx_p1 = epicenter_mapping(thr1, sc_ctx)
-        sc_sctx_r1, sc_sctx_p1 = epicenter_mapping(thr1, sc_sctx)
+        fc_ctx_r1, fc_ctx_p1 = util.epicenter_mapping(thr1, fc_ctx)
+        fc_sctx_r1, fc_sctx_p1 = util.epicenter_mapping(thr1, fc_sctx)
+        sc_ctx_r1, sc_ctx_p1 = util.epicenter_mapping(thr1, sc_ctx)
+        sc_sctx_r1, sc_sctx_p1 = util.epicenter_mapping(thr1, sc_sctx)
 
         thr_fc_epicentre[i, :] = np.concatenate((fc_ctx_r1, fc_sctx_r1))
         thr_sc_epicentre[i, :] = np.concatenate((sc_ctx_r1, sc_sctx_r1))
 
         for j in range(i, len(thresholds)):
-            thr2 = regional_association[threhsolds[j]]
+            thr2 = regional_association[thresholds[j]].t
 
-            fc_ctx_r2, fc_ctx_p2 = epicenter_mapping(thr2, fc_ctx)
-            fc_sctx_r2, fc_sctx_p2 = epicenter_mapping(thr2, fc_sctx)
-            sc_ctx_r2, sc_ctx_p2 = epicenter_mapping(thr2, sc_ctx)
-            sc_sctx_r2, sc_sctx_p2 = epicenter_mapping(thr2, sc_sctx)
+            fc_ctx_r2, fc_ctx_p2 = util.epicenter_mapping(thr2, fc_ctx)
+            fc_sctx_r2, fc_sctx_p2 = util.epicenter_mapping(thr2, fc_sctx)
+            sc_ctx_r2, sc_ctx_p2 = util.epicenter_mapping(thr2, sc_ctx)
+            sc_sctx_r2, sc_sctx_p2 = util.epicenter_mapping(thr2, sc_sctx)
 
-            fc_epicentre_similarity_r[i, j], epicentre_similarity_p[i, j], _ = (
-                spatial_correlation(
+            fc_epicentre_similarity_r[i, j], fc_epicentre_similarity_p[i, j], _ = (
+                util.spatial_correlation(
                     np.concatenate((fc_ctx_r1, fc_sctx_r1)),
                     np.concatenate((fc_ctx_r2, fc_sctx_r2)),
                     surface_name="fsa5_with_sctx",
@@ -220,18 +217,31 @@ def main():
                     n_rot=5000,
                 )
             )
+
+            sc_epicentre_similarity_r[i, j], sc_epicentre_similarity_p[i, j], _ = (
+                util.spatial_correlation(
+                    np.concatenate((sc_ctx_r1, sc_sctx_r1)),
+                    np.concatenate((sc_ctx_r2, sc_sctx_r2)),
+                    surface_name="fsa5_with_sctx",
+                    parcellation_name="aparc_aseg",
+                    n_rot=5000,
+                )
+            )
+
             print(f"{thresholds[i]} x {thresholds[j]} done")
-            
+
     print()
     print("Comparison to case-control atrophy")
     print("----------------------------------")
     # Generate atrophy for each site:
     age, sex, dataset, focus, ct = load_local_tle()
-
+    local_tle_atrophy = util.load_data(
+        "../../data/results/03_atrophyAssociation/local_atrophy.pkl", ["atrophy"]
+    )
     # Combined
     tle_atrophy = {}
-    tle_atrophy["lh_all"] = local_tle_atrophy["ltle"]["slm"]
-    tle_atrophy["rh_all"] = local_tle_atrophy["rtle"]["slm"]
+    tle_atrophy["lh_all"] = local_tle_atrophy["ltle"]["slm"].t
+    tle_atrophy["rh_all"] = local_tle_atrophy["rtle"]["slm"].t
 
     # Across different datasets
     for d in ["EpiC", "MICs", "NKG"]:
@@ -243,10 +253,10 @@ def main():
 
         x = util.zscore_flip(dataset_ct, dataset_focus, "C", "R")
         for hemi in ["L", "R"]:
-            covar = pd.DataFrame({'age': dataset_age, 'sex': dataset_sex)
+            covar = pd.DataFrame({"age": dataset_age, "sex": dataset_sex})
             tle_atrophy[f"{hemi.lower()}h_{d.lower()}"] = util.casecontrol_difference(
                 x, covar, dataset_focus, "C", hemi
-            )
+            ).t
 
         print(f"{d} atrophy done")
 
@@ -270,7 +280,6 @@ def main():
                 spatial_correlation(map1.t, map2.t, n_rot=5000)
             )
 
-    
     print()
     print("Save results")
     print("----------------------------------")
