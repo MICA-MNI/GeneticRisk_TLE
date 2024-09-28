@@ -6,7 +6,7 @@ import utilities as util
 def main():
     atrophy = util.load_result(
         "../../data/results/03_atrophyAssociation/local_atrophy.pkl", ["atrophy"]
-    )
+    )[0]
 
     fc_ctx, fc_sctx, sc_ctx, sc_sctx = util.load_connectomes()
     prs_fc_ctx, prs_fc_sctx, prs_sc_ctx, prs_sc_sctx = util.load_imaging_genetic(
