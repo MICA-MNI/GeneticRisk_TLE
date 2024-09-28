@@ -1,13 +1,11 @@
 import numpy as np
-import pandas as pd
-import pickle
 import utilities as util
 
 
 # Main analysis
 def main():
-    atrophy = util.load_data(
-        "../../data/results/03_atrophyAssociation/atrophy_association.npz", ["atrophy"]
+    atrophy = util.load_result(
+        "../../data/results/03_atrophyAssociation/local_atrophy.pkl", ["atrophy"]
     )
 
     fc_ctx, fc_sctx, sc_ctx, sc_sctx = util.load_connectomes()
@@ -32,7 +30,7 @@ def main():
         sc_sctx_r, sc_sctx_p = util.epicenter_mapping(atrophy_map, sc_sctx)
         epicentre[f"{hemi.lower()}tle"] = {
             "fc_ctx": {"r": fc_ctx_r, "p": fc_ctx_p},
-            "fc_sctx": {"r": fc_ctx_r, "p": fc_ctx_p},
+            "fc_sctx": {"r": fc_ctx_r, "p": fc_sctx_p},
             "sc_ctx": {"r": sc_ctx_r, "p": sc_ctx_p},
             "sc_sctx": {"r": sc_sctx_r, "p": sc_sctx_p},
         }
