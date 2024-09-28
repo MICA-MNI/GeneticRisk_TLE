@@ -39,13 +39,13 @@ def main():
         print("Correlate with PRS epicentre map")
         print("------------------------")
         r_fc_epi, p_fc_epi, null_fc_epi = util.spatial_correlation(
-            np.concatenate(fc_ctx_r, fc_sctx_r),
-            np.concatenate(prs_fc_ctx, prs_fc_sctx),
+            np.concatenate((fc_ctx_r, fc_sctx_r)),
+            np.concatenate((prs_fc_ctx, prs_fc_sctx)),
             parcellation_name="aparc_aseg",
         )
         r_sc_epi, p_sc_epi, null_sc_epi = util.spatial_correlation(
-            np.concatenate(sc_ctx_r, sc_sctx_r),
-            np.concatenate(prs_sc_ctx, prs_sc_sctx),
+            np.concatenate((sc_ctx_r, sc_sctx_r)),
+            np.concatenate((prs_sc_ctx, prs_sc_sctx)),
             parcellation_name="aparc_aseg",
         )
 
