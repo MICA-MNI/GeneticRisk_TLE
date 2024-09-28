@@ -237,7 +237,7 @@ def main():
     )
 
     util.save_to_pickle(
-        "../../data/results/s01_thresholdConsistency/threshold_atrophy_association.pkl",
+        "../../data/results/s01_thresholdConsistency/threshold_atrophy_similarity.pkl",
         {
             "atrophy_similarity_r": atrophy_similarity_r,
             "atrophy_similarity_p": atrophy_similarity_p,
