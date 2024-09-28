@@ -71,7 +71,7 @@ def load_imaging_genetic(result):
         )[0].t
     elif result == "network":
         return load_result(
-            f"{os.path.dirname(os.path.abspath(__file__))}/../../data/results/02_geneticCorrelation/epicentre.pkl",
+            f"{os.path.dirname(os.path.abspath(__file__))}/../../data/results/02_epicentreMapping/epicentre.pkl",
             ["fc_ctx_r", "fc_sctx_r", "sc_ctx_r", "sc_sctx_r"],
         )
 
