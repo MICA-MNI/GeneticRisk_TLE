@@ -316,7 +316,7 @@ def main():
         if i == 0:
             sc = np.empty((mtx_log.shape[0], mtx_log.shape[1], len(files)))
 
-        sc[:, :, i] = mtx_z
+        sc[:, :, i] = mtx_log
 
     mean_sc = np.mean(sc, axis=2)
 
