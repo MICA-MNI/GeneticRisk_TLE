@@ -81,7 +81,7 @@ def main():
             categorical_cols=categorical_cols,
         )["data"]
     )
-    icv, sv = sv[:, len(sv) - 1], sv[:, : len(sv) - 1]
+    icv, sv = sv[:, sv.shape[1] - 1], sv[:, : sv.shape[1] - 1]
 
     print()
     print("Save data")
