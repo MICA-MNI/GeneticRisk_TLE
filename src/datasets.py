@@ -35,9 +35,9 @@ def main():
     thresh = prs_all.columns.to_list()
 
     print()
-    print("Thickness data")
+    print("Morphological data")
     print("--------------------")
-    # Vertex-wise
+    # Vertex-wise cortical thickness
     abcd_ct = pd.read_csv("../data/raw/abcd_ct_vertex.csv", index_col="participant")
     ct_vertex = np.transpose(abcd_ct.to_numpy())
     covars = pd.DataFrame({"age": age, "sex": sex == "M", "site": site})
@@ -52,7 +52,7 @@ def main():
         )["data"]
     )
 
-    # Parcellated
+    # Parcellated corticla thickness
     abcd_ct = pd.read_csv("../data/raw/abcd_ct_aparc.csv", index_col="participant")
     ct_aparc = np.transpose(abcd_ct.to_numpy())
     covars = pd.DataFrame({"age": age, "sex": sex == "M", "site": site})
@@ -67,6 +67,22 @@ def main():
         )["data"]
     )
 
+    # Subcortical/intracranial volume
+    abcd_sv = pd.read_csv("../data/raw/abcd_sv.csv", index_col="participant")
+    sv = np.transpose(abcd_sv.to_numpy())
+    covars = pd.DataFrame({"age": age, "sex": sex == "M", "site": site})
+    categorical_cols = ["sex"]
+    batch_col = "site"
+    sv = np.transpose(
+        neuroCombat(
+            dat=sv,
+            covars=covars,
+            batch_col=batch_col,
+            categorical_cols=categorical_cols,
+        )["data"]
+    )
+    icv, sv = sv[:, len(sv) - 1], sv[:, : len(sv) - 1]
+
     print()
     print("Save data")
     print("--------------------")
@@ -80,6 +96,8 @@ def main():
         prs_all=prs_all,
         ct_vertex=ct_vertex,
         ct_aparc=ct_aparc,
+        sv=sv,
+        icv=icv,
     )
     print()
 

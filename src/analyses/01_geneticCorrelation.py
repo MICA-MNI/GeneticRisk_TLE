@@ -1,5 +1,3 @@
-import pickle
-import os
 import numpy as np
 import pandas as pd
 import utilities as util
@@ -12,13 +10,13 @@ from scipy.stats import pearsonr
 # Helper functions
 def load_abcd():
     """
-    Load local TLE (EpiC x MICs x NKG) data
+    Load ABCD data
 
     Returns:
-    numpy.ndarray: The loaded data containing age, sex, dataset, focus, and ct information.
+    numpy.ndarray: The loaded data containing age, sex, site, PC10, threshold, prs, and ct information.
     """
     return util.load_data(
-        "../../data/processed/local_tle_data.npz",
+        "../../data/processed/abcd_data.npz",
         ["age", "sex", "site", "pc10", "thresh", "prs_all", "ct_vertex", "ct_aparc"],
     )
 
@@ -114,8 +112,9 @@ def main():
     print()
     print("Save results")
     print("-----------------------------")
-    global_association.to_pickle(
-        "../../data/results/01_geneticCorrelation/global_association.pkl"
+    util.save_to_pickle(
+        "../../data/results/01_geneticCorrelation/global_association.pkl",
+        {"global_association": global_association, "mean_ct": mean_ct, "prs": prs},
     )
 
     print()

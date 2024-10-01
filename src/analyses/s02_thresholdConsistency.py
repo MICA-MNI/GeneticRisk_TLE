@@ -13,7 +13,7 @@ def load_abcd():
     Load abcd data
 
     Returns:
-    numpy.ndarray: The loaded data containing age, sex, dataset, focus, and ct information.
+    numpy.ndarray: The loaded data containing age, sex, site, PC10, threshold, prs, and ct information.
     """
     return util.load_data(
         "../../data/processed/abcd_data.npz",
@@ -150,12 +150,12 @@ def main():
     print("Save results")
     print("------------------------------------------")
     util.save_to_pickle(
-        "../../data/results/s01_thresholdConsistency/threshold_global_association.pkl",
+        "../../data/results/s02_thresholdConsistency/threshold_global_association.pkl",
         {"global_association": global_association},
     )
 
     util.save_to_pickle(
-        "../../data/results/s01_thresholdConsistency/threshold_regional_association.pkl",
+        "../../data/results/s02_thresholdConsistency/threshold_regional_association.pkl",
         {"regional_association": regional_association},
     )
 
@@ -183,7 +183,7 @@ def main():
     print("----------------------------------")
     # Generate atrophy for each site:
     age, sex, dataset, focus, ct = load_local_tle()
-    local_tle_atrophy = util.load_data(
+    local_tle_atrophy = util.load_result(
         "../../data/results/03_atrophyAssociation/local_atrophy.pkl", ["atrophy"]
     )[0]
     # Combined
@@ -232,12 +232,12 @@ def main():
     print("Save results")
     print("----------------------------------")
     util.save_to_pickle(
-        "../../data/results/s01_thresholdConsistency/threshold_similarity.pkl",
+        "../../data/results/s02_thresholdConsistency/threshold_similarity.pkl",
         {"thr_similarity_r": thr_similarity_r, "thr_similarity_p": thr_similarity_p},
     )
 
     util.save_to_pickle(
-        "../../data/results/s01_thresholdConsistency/threshold_atrophy_similarity.pkl",
+        "../../data/results/s02_thresholdConsistency/threshold_atrophy_similarity.pkl",
         {
             "atrophy_similarity_r": atrophy_similarity_r,
             "atrophy_similarity_p": atrophy_similarity_p,

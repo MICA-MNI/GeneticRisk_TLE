@@ -90,12 +90,12 @@ def main():
     print("Save resuts")
     print("-----------")
     util.save_to_pickle(
-        "../../data/results/s02_atrophyConsistency/multi_atrophy.pkl",
+        "../../data/results/s04_atrophyConsistency/multi_atrophy.pkl",
         {"atrophy": atrophy},
     )
 
     util.save_to_pickle(
-        "../../data/results/s02_atrophyConsistency/multi_association.pkl",
+        "../../data/results/s04_atrophyConsistency/multi_association.pkl",
         {"association": association},
     )
 
