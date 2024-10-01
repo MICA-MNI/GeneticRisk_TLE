@@ -138,3 +138,7 @@ def main():
         "../../data/results/s05_epicentreAssociation/multi_association.pkl",
         {"association": association},
     )
+
+
+if __name__ == "__main__":
+    main()
