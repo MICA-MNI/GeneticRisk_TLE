@@ -1,7 +1,4 @@
-import numpy as np
 import pandas as pd
-import os
-import pickle
 import utilities as util
 
 
@@ -28,7 +25,7 @@ def load_multi_tle():
     """
     return util.load_data(
         "../../data/processed/multi_tle_data.npz",
-        ["age", "sex", "site", "group", "focus", "ct"],
+        ["age", "sex", "group", "focus", "ct"],
     )
 
 
