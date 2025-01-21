@@ -7,7 +7,7 @@ Boris C. Bernhardt: boris.bernhardt@mcgill.ca (corresponding author)
 
 **Cite:**   
 **DOI:**   
-**Preprint:**   
+**Preprint:** https://www.biorxiv.org/content/10.1101/2025.01.17.633277v1   
 
 This repository contains the code to follow the workflow for our imaging-genetic analysis
 
