@@ -37,7 +37,7 @@ def main():
         age, sex, focus, ct = load_dataset[key]()
 
         # Load imaging genetic result
-        imaging_genetics = util.load_imaging_genetic()
+        imaging_genetics = util.load_imaging_genetic("regional")
 
         x = util.zscore_flip(ct, focus, "C", "_")
         covar = pd.DataFrame({"age": age, "sex": sex})
@@ -73,7 +73,7 @@ def main():
         )
 
         util.save_to_pickle(
-            f"/../../data/results/03_atrophyAssociation/{key}_association.pkl",
+            f"../../data/results/03_atrophyAssociation/{key}_association.pkl",
             {"association": association},
         )
 

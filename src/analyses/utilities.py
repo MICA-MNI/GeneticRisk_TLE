@@ -68,7 +68,7 @@ def load_imaging_genetic(result):
         return load_result(
             f"{os.path.dirname(os.path.abspath(__file__))}/../../data/results/01_geneticCorrelation/regional_association.pkl",
             ["slm"],
-        )[0].t
+        )[0]
     elif result == "network":
         return load_result(
             f"{os.path.dirname(os.path.abspath(__file__))}/../../data/results/02_epicentreMapping/epicentre.pkl",

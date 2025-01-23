@@ -27,7 +27,7 @@ def main():
     age, sex, group, ct = load_multi_ige()
 
     # Load imaging genetic result
-    imaging_genetics = util.load_imaging_genetic()
+    imaging_genetics = util.load_imaging_genetic("regional")
 
     atrophy, atrophy_association = {}, {}
 
@@ -37,7 +37,7 @@ def main():
     x = util.zscore_flip(ct, group, "HC", "_")
     covar = pd.DataFrame({"age": age, "sex": sex})
 
-    slm = util.casecontrol_difference(x, covar, group, "C", hemi)
+    slm = util.casecontrol_difference(x, covar, group, "C", "X")
     atrophy["ige"] = slm
 
     print()
