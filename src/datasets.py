@@ -321,6 +321,10 @@ def main():
     mean_sc = np.mean(sc, axis=2)
 
     # Isolate cortico-cortical and cortico-subcortical structural connectivity
+    ctx_idx = np.concatenate(
+        [np.arange(49, 52), np.arange(53, 84), np.arange(85, 88), np.arange(89, 120)]
+    )
+    sctx_idx = np.array([6, 5, 1, 4, 3, 2, 0, 13, 12, 8, 11, 10, 9, 7])
     sc_ctx = mean_sc[np.ix_(ctx_idx, ctx_idx)]
     sc_sctx = mean_sc[np.ix_(sctx_idx, ctx_idx)]
 
