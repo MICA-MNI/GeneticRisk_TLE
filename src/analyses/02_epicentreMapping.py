@@ -8,7 +8,7 @@ def main():
     print("---------------------------")
 
     fc_ctx, fc_sctx, sc_ctx, sc_sctx = util.load_connectomes()
-    prs_map = util.load_imaging_genetic("regional")
+    prs_map = util.load_imaging_genetic("regional").t
 
     print()
     print("Functional networks")
