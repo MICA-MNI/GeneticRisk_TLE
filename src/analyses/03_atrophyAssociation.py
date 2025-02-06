@@ -25,7 +25,7 @@ def load_multi_tle():
     """
     return util.load_data(
         "../../data/processed/multi_tle_data.npz",
-        ["age", "sex", "group", "focus", "ct"],
+        ["age", "sex", "focus", "ct"],
     )
 
 
@@ -33,6 +33,11 @@ def load_multi_tle():
 def main():
     load_dataset = {"local": load_local_tle, "multi": load_multi_tle}
     for key in load_dataset:
+        
+        print("------------------------")
+        print(f"Dataset: {key}")
+        print("------------------------")
+        
         # Load LTE data
         age, sex, focus, ct = load_dataset[key]()
 

@@ -9,7 +9,7 @@ def main():
         "network"
     )
 
-    for site in ["local", "multi"]:
+    for site in ["multi"]: #["local", "multi"]:
         print("------------------------")
         print(f"Dataset: {site}")
         print("------------------------")

@@ -37,7 +37,7 @@ def main():
     x = util.zscore_flip(ct, group, "HC", "_")
     covar = pd.DataFrame({"age": age, "sex": sex})
 
-    slm = util.casecontrol_difference(x, covar, group, "C", "X")
+    slm = util.casecontrol_difference(x, covar, group, "HC", "IGE")
     atrophy["ige"] = slm
 
     print()

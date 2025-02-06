@@ -83,7 +83,7 @@ def main():
         print(f"{sctx}: r = {r[i]}, r-squared = {r2[i]}, p = {p[i]}")
 
     global_association = pd.DataFrame(
-        {"subcortical": subcortical, "r": r, "r2": r2, "p": p}
+        {"subcortical": subcortical.keys(), "r": r, "r2": r2, "p": p}
     )
 
     print()

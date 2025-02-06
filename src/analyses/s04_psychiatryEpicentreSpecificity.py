@@ -82,12 +82,12 @@ def main():
     print("Save results")
     print("------------")
     util.save_to_pickle(
-        "../../data/results/s04_psychiatricEpicentreSpecificity/psychiatric_epicentre.pkl",
+        "../../data/results/s04_psychiatryEpicentreSpecificity/psychiatric_epicentre.pkl",
         {"epicentre": epicentre},
     )
 
     util.save_to_pickle(
-        "../../data/results/s04_psychiatricsEpicentreSpecificity/psychiatric_association.pkl",
+        "../../data/results/s04_psychiatryEpicentreSpecificity/psychiatric_association.pkl",
         {"association": association},
     )
 

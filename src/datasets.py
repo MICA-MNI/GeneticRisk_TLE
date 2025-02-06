@@ -254,7 +254,7 @@ def main():
     print("Thickness data")
     print("-------------------------")
     multi_ige_ct = pd.read_csv("../data/raw/multi_ige_ct.csv", index_col="participant")
-    ct = np.transpose(multi_ige_ct.to_numpy())
+    ct = multi_ige_ct.to_numpy()
 
     print()
     print("Save data")

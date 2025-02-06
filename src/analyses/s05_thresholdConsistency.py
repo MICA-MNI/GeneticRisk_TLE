@@ -21,17 +21,31 @@ def load_abcd():
     )
 
 
-def load_local_tle():
+def load_multi_tle():
     """
-    Load local TLE (EpiC x MICs x NKG) data
+    Load multisite TLE (ENIGMA) data
 
     Returns:
-    numpy.ndarray: The loaded data containing age, sex, dataset, focus, and ct information.
+    numpy.ndarray: The loaded data containing age, sex, dataset, group, focus, and ct information.
     """
     return util.load_data(
-        "../../data/processed/local_tle_data.npz",
-        ["age", "sex", "dataset", "focus", "ct"],
+        "../../data/processed/multi_tle_data.npz",
+        ["age", "sex", "focus", "ct"],
     )
+    
+    
+def load_multi_ige():
+    """
+    Load multisite IGE (ENIGMA) data
+
+    Returns:
+    numpy.ndarray: The loaded data containing age, sex, dataset, group, focus, and ct information.
+    """
+    return util.load_data(
+        "../../data/processed/multi_ige_data.npz",
+        ["age", "sex", "group", "ct"],
+    )
+
 
 
 # Main analysis
@@ -72,30 +86,7 @@ def main():
 
     # Lobe indices
     lobe_names = ["whole", "frontal", "limbic", "occipital", "parietal", "temporal"]
-    frontal = [
-        17,
-        18,
-        25,
-        16,
-        22,
-        2,
-        26,
-        10,
-        12,
-        30,
-        15,
-        46,
-        64,
-        60,
-        49,
-        44,
-        59,
-        52,
-        50,
-        56,
-        36,
-        51,
-    ]
+    frontal = [17, 18, 25, 16, 22, 2, 26, 10, 12, 30, 15, 46, 64, 60, 49, 44, 59, 52, 50, 56, 36, 51,]
     limbic = [8, 21, 1, 24, 33, 58, 35, 55, 42, 67]
     occipital = [11, 19, 9, 3, 45, 53, 37, 43]
     parietal = [20, 27, 29, 6, 23, 54, 61, 40, 63, 57]
@@ -182,49 +173,27 @@ def main():
     print("Comparison to case-control atrophy")
     print("----------------------------------")
     # Generate atrophy for each site:
-    age, sex, dataset, focus, ct = load_local_tle()
-    local_tle_atrophy = util.load_result(
-        "../../data/results/03_atrophyAssociation/local_atrophy.pkl", ["atrophy"]
+    epilepsy_atrophy = {}
+    
+    multi_tle_atrophy = util.load_result(
+        "../../data/results/03_atrophyAssociation/multi_atrophy.pkl", ["atrophy"]
     )[0]
-    # Combined
-    tle_atrophy = {}
-    tle_atrophy["lh_all"] = local_tle_atrophy["ltle"]
-    tle_atrophy["rh_all"] = local_tle_atrophy["rtle"]
-
-    # Across different datasets
-    for d in ["EpiC", "MICs"]:
-        dataset_idx = dataset == d
-        dataset_ct = ct[dataset_idx, :]
-        dataset_age = age[dataset_idx]
-        dataset_sex = sex[dataset_idx]
-        dataset_focus = focus[dataset_idx]
-
-        x = util.zscore_flip(dataset_ct, dataset_focus, "C", "R")
-        for hemi in ["L", "R"]:
-            covar = pd.DataFrame({"age": dataset_age, "sex": dataset_sex})
-            tle_atrophy[f"{hemi.lower()}h_{d.lower()}"] = util.casecontrol_difference(
-                x, covar, dataset_focus, "C", hemi
-            )
-
-        print(f"{d} atrophy done")
-
-    site_labels = [
-        "lh_all",
-        "lh_epic",
-        "lh_mics",
-        "rh_all",
-        "rh_epic",
-        "rh_mics",
-    ]
-    atrophy_similarity_r = np.zeros((len(thresholds), len(site_labels)))
-    atrophy_similarity_p = np.zeros((len(thresholds), len(site_labels)))
+    epilepsy_atrophy["ltle"] = multi_tle_atrophy["ltle"]
+    epilepsy_atrophy["rtle"] = multi_tle_atrophy["rtle"]
+    
+    multi_ige_atrophy = util.load_result(
+        "../../data/results/s02_igeSpecificity/ige_atrophy.pkl", ["atrophy"]
+    )[0]
+    epilepsy_atrophy["ige"] = multi_ige_atrophy["ige"]
+    
+    atrophy_similarity_r = np.zeros((len(thresholds), len(epilepsy_atrophy)))
+    atrophy_similarity_p = np.zeros((len(thresholds), len(epilepsy_atrophy)))
     for i in range(len(thresholds)):
         map1 = regional_association[thresholds[i]]
-        for site in site_labels:
-            map2 = tle_atrophy[site]
-            atrophy_similarity_r[i, j], atrophy_similarity_p[i, j], _ = (
-                util.spatial_correlation(map1.t, map2.t, n_rot=5000)
-            )
+        for j, subtype in enumerate(epilepsy_atrophy):
+            map2 = epilepsy_atrophy[subtype]
+            atrophy_similarity_r[i, j], atrophy_similarity_p[i, j], _ = util.spatial_correlation(map1.t, map2.t, n_rot=5000)
+
 
     print()
     print("Save results")

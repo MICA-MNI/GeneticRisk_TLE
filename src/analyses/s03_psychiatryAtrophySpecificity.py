@@ -19,20 +19,12 @@ def load_psychiatry():
           the cohen's D effect size from the summary statistics for that condition.
     """
     atrophy = {
-        "adhd": load_summary_stats("adhd")["CortThick_case_vs_controls_adult"]["d_icv"],
-        "asd": load_summary_stats("asd")["CortThick_case_vs_controls_meta_analysis"][
-            "d_icv"
-        ],
-        "bd": load_summary_stats("bipolar")["CortThick_case_vs_controls_adult"][
-            "d_icv"
-        ],
-        "mdd": load_summary_stats("depression")["CortThick_case_vs_controls_adult"][
-            "d_icv"
-        ],
-        "ocd": load_summary_stats("ocd")["CortThick_case_vs_controls_adult"]["d_icv"],
-        "scz": load_summary_stats("schizophrenia")["CortThick_case_vs_controls"][
-            "d_icv"
-        ],
+        "adhd": load_summary_stats("adhd")["CortThick_case_vs_controls_adult"]["d_icv"].to_numpy(),
+        "asd": load_summary_stats("asd")["CortThick_case_vs_controls_meta_analysis"]["d_icv"].to_numpy(),
+        "bd": load_summary_stats("bipolar")["CortThick_case_vs_controls_adult"]["d_icv"].to_numpy(),
+        "mdd": load_summary_stats("depression")["CortThick_case_vs_controls_adult"]["d_icv"].to_numpy(),
+        "ocd": load_summary_stats("ocd")["CortThick_case_vs_controls_adult"]["d_icv"].to_numpy(),
+        "scz": load_summary_stats("schizophrenia")["CortThick_case_vs_controls"]["d_icv"].to_numpy(),
     }
 
     return atrophy
@@ -44,7 +36,7 @@ def main():
     atrophy = load_psychiatry()
 
     # Load imaging genetic result
-    imaging_genetics = util.load_imaging_genetic("regional")
+    imaging_genetics = util.load_imaging_genetic("regional").t
 
     association = {}
     print("----------------------")
@@ -54,7 +46,7 @@ def main():
         print()
         print(f"{psy}")
         print("----------------------")
-        r, p, null = util.spatial_correlation(atrophy[psy], imaging_genetics.t)
+        r, p, null = util.spatial_correlation(atrophy[psy], imaging_genetics)
 
         association[psy] = {"r": r, "p": p, "null": null}
 

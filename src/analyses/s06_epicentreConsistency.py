@@ -2,20 +2,6 @@ import numpy as np
 import utilities as util
 
 
-# Helper functions
-def load_abcd():
-    """
-    Load abcd data
-
-    Returns:
-    numpy.ndarray: The loaded data containing age, sex, dataset, focus, and ct information.
-    """
-    return util.load_data(
-        "../../data/processed/abcd_data.npz",
-        ["age", "sex", "site", "pc10", "thresh", "prs_all", "ct_vertex", "ct_aparc"],
-    )
-
-
 # Main analysis
 def main():
     print("------------------------------------------")
@@ -33,9 +19,9 @@ def main():
     ]
 
     regional_association = util.load_result(
-        "../../data/results/s01_thresholdConsistency/threshold_regional_association.pkl",
+        "../../data/results/s05_thresholdConsistency/threshold_regional_association.pkl",
         ["regional_association"],
-    )
+    )[0]
 
     fc_ctx, fc_sctx, sc_ctx, sc_sctx = util.load_connectomes()
 
